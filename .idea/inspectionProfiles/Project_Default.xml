@@ -1,0 +1,115 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="aiofiles" />
+          <option value="aiogram" />
+          <option value="aiohappyeyeballs" />
+          <option value="aiohttp" />
+          <option value="aiosignal" />
+          <option value="alembic" />
+          <option value="annotated-doc" />
+          <option value="annotated-types" />
+          <option value="anyio" />
+          <option value="attrs" />
+          <option value="bcrypt" />
+          <option value="certifi" />
+          <option value="cffi" />
+          <option value="charset-normalizer" />
+          <option value="click" />
+          <option value="contourpy" />
+          <option value="cryptography" />
+          <option value="cycler" />
+          <option value="ecdsa" />
+          <option value="fastapi" />
+          <option value="filelock" />
+          <option value="fonttools" />
+          <option value="frozenlist" />
+          <option value="fsspec" />
+          <option value="greenlet" />
+          <option value="h11" />
+          <option value="idna" />
+          <option value="itsdangerous" />
+          <option value="Jinja2" />
+          <option value="kiwisolver" />
+          <option value="magic-filter" />
+          <option value="Mako" />
+          <option value="MarkupSafe" />
+          <option value="matplotlib" />
+          <option value="mpmath" />
+          <option value="multidict" />
+          <option value="networkx" />
+          <option value="numpy" />
+          <option value="nvidia-cublas-cu12" />
+          <option value="nvidia-cuda-cupti-cu12" />
+          <option value="nvidia-cuda-nvrtc-cu12" />
+          <option value="nvidia-cuda-runtime-cu12" />
+          <option value="nvidia-cudnn-cu12" />
+          <option value="nvidia-cufft-cu12" />
+          <option value="nvidia-cufile-cu12" />
+          <option value="nvidia-curand-cu12" />
+          <option value="nvidia-cusolver-cu12" />
+          <option value="nvidia-cusparse-cu12" />
+          <option value="nvidia-cusparselt-cu12" />
+          <option value="nvidia-nccl-cu12" />
+          <option value="nvidia-nvjitlink-cu12" />
+          <option value="nvidia-nvshmem-cu12" />
+          <option value="nvidia-nvtx-cu12" />
+          <option value="opencv-python" />
+          <option value="packaging" />
+          <option value="pillow" />
+          <option value="polars" />
+          <option value="polars-runtime-32" />
+          <option value="propcache" />
+          <option value="psutil" />
+          <option value="pyasn1" />
+          <option value="pycparser" />
+          <option value="pydantic" />
+          <option value="pydantic_core" />
+          <option value="pyparsing" />
+          <option value="python-dateutil" />
+          <option value="python-dotenv" />
+          <option value="python-jose" />
+          <option value="python-multipart" />
+          <option value="PyYAML" />
+          <option value="pyzbar" />
+          <option value="qrdet" />
+          <option value="qreader" />
+          <option value="quadrilateral-fitter" />
+          <option value="requests" />
+          <option value="rsa" />
+          <option value="scipy" />
+          <option value="setuptools" />
+          <option value="shapely" />
+          <option value="six" />
+          <option value="sqladmin" />
+          <option value="SQLAlchemy" />
+          <option value="starlette" />
+          <option value="sympy" />
+          <option value="torch" />
+          <option value="torchvision" />
+          <option value="tqdm" />
+          <option value="triton" />
+          <option value="typing-inspection" />
+          <option value="typing_extensions" />
+          <option value="ultralytics" />
+          <option value="ultralytics-thop" />
+          <option value="urllib3" />
+          <option value="uvicorn" />
+          <option value="WTForms" />
+          <option value="yarl" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyTypeCheckerInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="str.*" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

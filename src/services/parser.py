@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, unquote
 
+from src.main import logger
+
 
 def parse_files_from_page(url: str):
     """Парсит страницу и возвращает список файлов"""
@@ -49,5 +51,5 @@ def parse_files_from_page(url: str):
         return unique_files
 
     except Exception as e:
-        print(f"Ошибка парсинга {url}: {e}")
+        logger.error(f"Ошибка парсинга {url}: {e}")
         return []

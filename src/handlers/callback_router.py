@@ -2,8 +2,8 @@ import aiomax
 import logging
 from src.keyboards import get_main_menu, get_categories_menu
 from src.handlers.content import show_category_files
+from src.main import logger
 
-logger = logging.getLogger(__name__)
 router = aiomax.Router()
 
 
@@ -46,18 +46,7 @@ async def handle_callbacks(cb: aiomax.Callback):
         )
         return
 
-    # Выбор раздела (старый формат - оставляем для совместимости)
-    if payload.startswith("section_"):
-        section_key = payload.replace("section_", "")
-        await cb.answer(text="📚 Загрузка...")
-        await cb.message.edit(
-            f"📚 **Выберите категорию:**",
-            keyboard=get_categories_menu(section_key),
-            format='markdown'
-        )
-        return
-
-    # НОВЫЙ ФОРМАТ: Выбор раздела с разделителем |
+    # Выбор раздела с разделителем |
     if payload.startswith("section|"):
         section_key = payload.split("|")[1]
         await cb.answer(text="📚 Загрузка...")
@@ -68,7 +57,7 @@ async def handle_callbacks(cb: aiomax.Callback):
         )
         return
 
-    # НОВЫЙ ФОРМАТ: Выбор категории с разделителем |
+    # Выбор категории с разделителем |
     if payload.startswith("category|"):
         parts = payload.split("|")
         if len(parts) >= 3:
@@ -81,7 +70,7 @@ async def handle_callbacks(cb: aiomax.Callback):
             await cb.answer(text="❌ Ошибка формата данных")
         return
 
-    # НОВЫЙ ФОРМАТ: Пагинация с разделителем |
+    # Пагинация с разделителем |
     if payload.startswith("page|"):
         parts = payload.split("|")
         if len(parts) >= 4:
@@ -94,17 +83,12 @@ async def handle_callbacks(cb: aiomax.Callback):
             logger.error(f"Некорректный page payload: {payload}")
         return
 
-    # НОВЫЙ ФОРМАТ: Отправка файла с разделителем |
+    # Отправка файла с разделителем |
     if payload.startswith("file|"):
         file_url = payload.replace("file|", "")
         logger.info(f"Запрос на отправку файла: {file_url}")
         await send_file(cb, file_url)
         return
-
-    # СТАРЫЙ ФОРМАТ: для обратной совместимости (если нужно)
-    if payload.startswith("category_"):
-        # старый код...
-        pass
 
     logger.warning(f"Неизвестный payload: {payload}")
     await cb.answer(text="❌ Неизвестная команда")

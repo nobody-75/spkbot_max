@@ -2,7 +2,6 @@ import aiomax
 import logging
 from src.keyboards import get_main_menu, get_categories_menu
 from src.handlers.content import show_category_files
-from src.main import logger
 
 router = aiomax.Router()
 

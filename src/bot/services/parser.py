@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, unquote
 
-from src.main import logger
 
 
 def parse_files_from_page(url: str):

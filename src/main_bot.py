@@ -2,7 +2,7 @@ import logging
 from src.config.settings import settings
 import aiomax
 import asyncio
-from src.handlers import main_router
+from src.bot.handlers import main_router
 
 # Настройка логирования
 logging.basicConfig(

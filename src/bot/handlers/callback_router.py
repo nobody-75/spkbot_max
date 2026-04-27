@@ -1,10 +1,11 @@
-import aiomax
 import logging
-from src.keyboards import get_main_menu, get_categories_menu
-from src.handlers.content import show_category_files
+
+import aiomax
+from src.bot.keyboards import get_main_menu, get_categories_menu
+from src.bot.handlers.content import show_category_files
 
 router = aiomax.Router()
-
+logger = logging.getLogger(__name__)
 
 async def send_file(cb: aiomax.Callback, file_url: str):
     """Отправляет файл пользователю"""
@@ -41,6 +42,17 @@ async def handle_callbacks(cb: aiomax.Callback):
         await cb.message.edit(
             "🏠 **Главное меню**\n\nВыберите раздел:",
             keyboard=get_main_menu(),
+            format='markdown'
+        )
+        return
+
+    # Выбор раздела с разделителем |
+    if payload.startswith("section_"):
+        section_key = payload.split("_")[1]
+        await cb.answer(text="📚 Загрузка...")
+        await cb.message.edit(
+            f"📚 **Выберите категорию:**",
+            keyboard=get_categories_menu(section_key),
             format='markdown'
         )
         return

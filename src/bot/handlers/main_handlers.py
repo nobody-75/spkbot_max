@@ -1,6 +1,6 @@
 import aiomax
-from src.handlers.callback_router import router
-from src.keyboards import get_main_menu
+from src.bot.handlers.callback_router import router
+from src.bot.keyboards import get_main_menu
 
 # Создаем основной роутер
 main_router = aiomax.Router()

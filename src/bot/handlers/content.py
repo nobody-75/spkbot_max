@@ -1,7 +1,7 @@
 import aiomax
 import logging
-from src.services.parser import parse_files_from_page
-from src.keyboards.files_menu import get_files_menu
+from src.bot.services.parser import parse_files_from_page
+from src.bot.keyboards.files_menu import get_files_menu
 from src.config.settings import settings
 
 logger = logging.getLogger(__name__)

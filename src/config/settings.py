@@ -19,12 +19,12 @@ class Settings:
 
     @property
     def DATABASE_URL(self) -> str:
-        """Синхронный URL для Alembic"""
+        """URL для подключения (синхронный)"""
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     @property
     def DATABASE_URL_SYNC(self) -> str:
-        """Синхронный URL для Alembic (алиас)"""
+        """Синхронный URL для Alembic"""
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     @property

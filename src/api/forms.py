@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from src.database import get_db
 from src.database.models import Button, Form, FormQuestion, Question
 from src.schemas.forms import FormResponse, FormData, QuestionResponse
@@ -20,24 +21,20 @@ async def get_form(button_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Кнопка не найдена")
 
     # Находим форму, связанную с кнопкой
-    result = await db.execute(select(Form).filter(Form.button_id == button_id))
-    form = result.scalar_one_or_none()
+    result = await db.execute(
+        select(Form)
+        .options(joinedload(Form.form_questions).joinedload(FormQuestion.question))
+        .filter(Form.button_id == button_id)
+    )
+    form = result.unique().scalar_one_or_none()
 
     if not form:
         raise HTTPException(status_code=404, detail="Форма не найдена")
 
-    # Получаем вопросы для этой формы
-    result = await db.execute(
-        select(Question, FormQuestion)
-        .join(FormQuestion, Question.id == FormQuestion.question_id)
-        .filter(FormQuestion.form_id == form.id)
-        .order_by(FormQuestion.sort_order)
-    )
-    questions_data = result.all()
-
-    # Формируем ответ
+    # Получаем вопросы через связь form_questions
     questions = []
-    for q, fq in questions_data:
+    for fq in sorted(form.form_questions, key=lambda x: x.sort_order):
+        q = fq.question
         questions.append(QuestionResponse(
             id=q.id,
             question_text=q.question_text,

@@ -9,10 +9,23 @@ main_router = aiomax.Router()
 @main_router.on_command('start')
 async def start_command(ctx: aiomax.CommandContext):
     await ctx.reply(
-        f"👋 Привет, {ctx.message.sender.name}!\n\nЯ помогу найти документы Северского промышленного колледжа.\n\n🏠 **Главное меню**\n\nВыберите раздел:",
+        f"👋 Привет, {ctx.message.sender.name}!\n\nЯ помогу найти документы"
+        f" Северского промышленного колледжа.\n\n🏠"
+        f"**Главное меню**\n\nВыберите раздел:",
         keyboard=get_main_menu(),
         format='markdown'
     )
 
 # Добавляем callback роутер
 main_router.add_router(router)
+
+
+
+
+
+
+
+
+
+
+

@@ -38,7 +38,6 @@ def parse_files_from_page(url: str):
                     "url": full_url,
                     "type": "file"
                 })
-
         # Удаляем дубликаты по URL
         unique_files = []
         seen_urls = set()
@@ -46,9 +45,9 @@ def parse_files_from_page(url: str):
             if f["url"] not in seen_urls:
                 seen_urls.add(f["url"])
                 unique_files.append(f)
-
         return unique_files
 
+
     except Exception as e:
-        logger.error(f"Ошибка парсинга {url}: {e}")
+
         return []

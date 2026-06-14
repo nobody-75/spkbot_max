@@ -1,10 +1,8 @@
-from sqlalchemy import Column, Integer, String, event, ForeignKey, Boolean, Text, DateTime, UniqueConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Text, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import JSON
-
 from . import Base
-
 
 class Role(Base):
     __tablename__ = "roles"
@@ -15,57 +13,24 @@ class Role(Base):
     def __str__(self):
         return self.name
 
-
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String(100), index=True, nullable=False)
     second_name = Column(String(100), index=True, nullable=False)
-    login = Column(String(100), index=True, nullable=False)
+    login = Column(String(100), unique=True, index=True, nullable=False)  # Исправлено: unique=True
     max_id = Column(String(100), unique=True, index=True, nullable=False)
     role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
     password = Column(String(100), nullable=False)
 
-    profile = relationship(
-        "Profile",
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan",
-        lazy="joined"
-    )
-
     role_rel = relationship("Role", lazy="joined")
 
-    # Связь с заявками (добавлено)
-    submissions = relationship("Submission", back_populates="user", lazy="dynamic")
+    # Связь с заявками
+    submissions = relationship("Submission", back_populates="user", lazy="select")
 
     def __str__(self):
         return f"{self.first_name} {self.second_name}"
-
-
-class Profile(Base):
-    __tablename__ = "profiles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
-
-    user = relationship("User", back_populates="profile", lazy="joined")
-
-    @property
-    def user_display(self) -> str:
-        """Возвращает ФИО пользователя"""
-        if self.user:
-            return f"{self.user.first_name} {self.user.second_name}".strip()
-        return "Не указан"
-
-    def __str__(self):
-        return self.user_display
-
-
-# =====================================================
-# НОВЫЕ МОДЕЛИ ДЛЯ ФОРМ И ЗАЯВОК
-# =====================================================
 
 class Button(Base):
     """Кнопки, которые видит пользователь"""
@@ -91,17 +56,31 @@ class Form(Base):
     __tablename__ = "forms"
 
     id = Column(Integer, primary_key=True, index=True)
-    button_id = Column(Integer, ForeignKey("buttons.id"), unique=True, nullable=False)
+    button_id = Column(Integer, ForeignKey("buttons.id"), nullable=False)
     title = Column(String(255), nullable=False)  # заголовок формы
     description = Column(Text)  # описание формы
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Связи
     button = relationship("Button", back_populates="form")
-    form_questions = relationship("FormQuestion", back_populates="form", cascade="all, delete-orphan")
+    form_questions = relationship("FormQuestion", back_populates="form", cascade="all, delete-orphan", lazy="joined")
 
     def __str__(self):
         return self.title
+
+    @property
+    def questions_display(self) -> str:
+        """Возвращает список вопросов для отображения в админке"""
+        if not self.form_questions:
+            return "Нет вопросов"
+
+        lines = []
+        for fq in sorted(self.form_questions, key=lambda x: x.sort_order):
+            q = fq.question
+            required = " *" if fq.is_required else ""
+            lines.append(f"<b>{fq.sort_order + 1}.</b> {q.question_text if q else 'Вопрос #' + str(fq.question_id)}{required}")
+
+        return "<br>".join(lines)
 
 
 class Question(Base):
@@ -137,14 +116,14 @@ class FormQuestion(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Связи
-    form = relationship("Form", back_populates="form_questions")
-    question = relationship("Question", back_populates="form_questions")
+    form = relationship("Form", back_populates="form_questions", lazy="joined")
+    question = relationship("Question", back_populates="form_questions", lazy="joined")
 
     # Уникальность: один вопрос не может быть дважды в одной форме
     __table_args__ = (UniqueConstraint('form_id', 'question_id', name='uq_form_question'),)
 
     def __str__(self):
-        return f"{self.form.title} - {self.question.question_text}"
+        return f"FormQuestion #{self.id}"
 
 
 class Submission(Base):
@@ -161,11 +140,24 @@ class Submission(Base):
 
     # Связи
     button = relationship("Button", back_populates="submissions")
-    user = relationship("User", back_populates="submissions")
-    answers = relationship("SubmissionAnswer", back_populates="submission", cascade="all, delete-orphan")
+    user = relationship("User", back_populates="submissions", lazy="joined")
+    answers = relationship("SubmissionAnswer", back_populates="submission", cascade="all, delete-orphan", lazy="joined")
 
     def __str__(self):
         return f"Заявка #{self.id} - {self.status}"
+
+    @property
+    def answers_display(self) -> str:
+        """Возвращает список ответов для отображения в админке"""
+        if not self.answers:
+            return "Нет ответов"
+
+        lines = []
+        for answer in sorted(self.answers, key=lambda a: a.question_id):
+            q_text = answer.question.question_text if answer.question else f"Вопрос #{answer.question_id}"
+            lines.append(f"<b>{q_text}:</b><br>{answer.answer_value}")
+
+        return "<br><br>".join(lines)
 
 
 class SubmissionAnswer(Base):
@@ -179,20 +171,8 @@ class SubmissionAnswer(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Связи
-    submission = relationship("Submission", back_populates="answers")
-    question = relationship("Question", back_populates="submission_answers")
+    submission = relationship("Submission", back_populates="answers", lazy="joined")
+    question = relationship("Question", back_populates="submission_answers", lazy="joined")
 
     def __str__(self):
-        return f"{self.question.question_text}: {self.answer_value}"
-
-
-# =====================================================
-# ТРИГГЕРЫ
-# =====================================================
-
-@event.listens_for(User, 'after_insert')
-def create_profile(mapper, connection, target):
-    """Автоматически создает профиль при создании пользователя"""
-    connection.execute(
-        Profile.__table__.insert().values(user_id=target.id)
-    )
+        return f"Answer #{self.id}"

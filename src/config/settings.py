@@ -16,6 +16,22 @@ class Settings:
     DB_PORT: str = os.getenv("DB_PORT", "")
     DB_NAME: str = os.getenv("DB_NAME", "")
 
+    # Преобразуем порт в int с проверкой
+    @property
+    def DB_PORT(self) -> int:
+        port = os.getenv("DB_PORT", "5432")
+        if not port:
+            return 5432
+        try:
+            return int(port)
+        except ValueError:
+            return 5432
+
+    # Формируем URL из частей
+    @property
+    def DATABASE_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
 
     @property
     def DATABASE_URL(self) -> str:

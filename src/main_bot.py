@@ -1,7 +1,10 @@
+import os
+os.environ['PYTHONHTTPSVERIFY'] = '0'
+
 import logging
-from src.config.settings import settings
 import aiomax
 import asyncio
+from src.config.settings import settings
 from src.bot.handlers import main_router
 
 # Настройка логирования
@@ -13,14 +16,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 bot = aiomax.Bot(settings.TOKEN_BOT)
-
-# Регистрируем основной роутер
 bot.add_router(main_router)
 
 async def main():
     logger.info("Запуск бота...")
     try:
-        # Сначала запускаем поллинг
         await bot.start_polling()
         logger.info("Бот успешно запущен")
     except Exception as e:
@@ -29,7 +29,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
-    

@@ -1,26 +1,79 @@
-version: '3.8'
-
 services:
-  api:
-    build: .
-    container_name: fastapi-app
+  # PostgreSQL - база данных
+  db:
+    image: postgres:15-alpine
+    container_name: spkbot_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-spkbot_max}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spkbot_network
+
+  # Backend - FastAPI
+  backend:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: spkbot_backend
     ports:
       - "8000:8000"
     env_file:
       - .env
-    restart: unless-stopped
-    volumes:
-      - ./src:/app/src
-      - ./frontend:/app/frontend
-
-  frontend:
-    build: ./frontend/maxapp
-    container_name: frontend-app
-    ports:
-      - "5173:5173"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
     depends_on:
-      - api
+      db:
+        condition: service_healthy
+    networks:
+      - spkbot_network
     restart: unless-stopped
-    volumes:
-      - ./frontend/maxapp:/app
-      - /app/node_modules
+
+  # Frontend - React + Nginx
+  frontend:
+    build:
+      context: ./frontend/maxapp
+      dockerfile: Dockerfile
+    container_name: spkbot_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - spkbot_network
+    restart: unless-stopped
+
+  # Bot - aiomax
+  bot:
+    build:
+      context: ./src
+      dockerfile: bot/Dockerfile
+    container_name: spkbot_bot
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - spkbot_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  spkbot_network:
+    driver: bridge

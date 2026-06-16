@@ -13,6 +13,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from src.admin.views import UserAdmin, ButtonAdmin, FormAdmin, QuestionAdmin, SubmissionAdmin
 # ================= НОВОЕ: ИМПОРТЫ API ДЛЯ МИНИ-ПРИЛОЖЕНИЯ =================
 from src.api import buttons_router, forms_router, submissions_router, my_router
+from src.api.user import router as user_router
 # from src.admin.views import AdminAuth
 from src.config.settings import settings
 from src.database import engine
@@ -96,6 +97,7 @@ app.include_router(buttons_router)
 app.include_router(forms_router)
 app.include_router(submissions_router)
 app.include_router(my_router)
+app.include_router(user_router)
 
 # ================= КОРНЕВОЙ ЭНДПОИНТ =================
 @app.get("/")

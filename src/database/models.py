@@ -19,7 +19,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String(100), index=True, nullable=False)
     second_name = Column(String(100), index=True, nullable=False)
-    login = Column(String(100), unique=True, index=True, nullable=False)  # Исправлено: unique=True
+    login = Column(String(100), unique=True, index=True, nullable=False)
+    group = Column(String(10), nullable=True)
     max_id = Column(String(100), unique=True, index=True, nullable=False)
     role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
     password = Column(String(100), nullable=False)

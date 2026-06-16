@@ -33,7 +33,7 @@ async def get_db():
         finally:
             await session.close()
 # Импортируем модели после объявления Base, чтобы избежать круговых импортов
-from src.database.models import User
+from src.database.models import User, Role
 
 __all__ = [
     'Base',
@@ -42,5 +42,6 @@ __all__ = [
     'AsyncSessionLocal',
     'get_db',
     'User',
+    'Role',
 ]
 

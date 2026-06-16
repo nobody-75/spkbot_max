@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+.env
+.dockerignore
+.git/
+.gitignore
+*.md
+migrations/
+test.http
+check.py
+migrate.py
+clear_and_seed.py
